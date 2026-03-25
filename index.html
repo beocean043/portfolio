@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>컨셉아트 포트폴리오</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+     <div class="gallery">
+    <!-- 썸네일 12개 -->
+    <!-- 반복 -->
+    <div class="thumb" data-full="images/0.gif">
+      <img src="images/0.gif" alt="Thumbnail 0">
+    </div>
+    <div class="thumb" data-full="images/1.gif">
+      <img src="images/1.gif" alt="Thumbnail 1">
+    </div>
+    <div class="thumb" data-full="images/2.gif">
+      <img src="images/2.gif" alt="Thumbnail 2">
+    </div>
+    <div class="thumb" data-full="images/3.png">
+      <img src="images/3.png" alt="Thumbnail 3">
+    </div>
+        <div class="thumb" data-full="images/4(2).png">
+      <img src="images/4(2).png" alt="Thumbnail 4(2)">
+    </div>
+    <div class="thumb" data-full="images/4.gif">
+      <img src="images/4.gif" alt="Thumbnail 4">
+    </div>
+    <div class="thumb" data-full="images/5.gif">
+      <img src="images/5.gif" alt="Thumbnail 5">
+    </div>
+    <div class="thumb" data-full="images/6.gif">
+      <img src="images/6.gif" alt="Thumbnail 6">
+    </div>
+    <div class="thumb" data-full="images/7.gif">
+      <img src="images/7.gif" alt="Thumbnail 7">
+    </div>
+       <div class="thumb" data-full="images/19.gif">
+      <img src="images/19.gif" alt="Thumbnail 19">
+    </div>
+       <div class="thumb" data-full="images/20.png">
+      <img src="images/20.png" alt="Thumbnail 20">
+    </div>
+    <div class="thumb" data-full="images/8.png">
+      <img src="images/8.png" alt="Thumbnail 8">
+    </div>
+    <div class="thumb" data-full="images/9.png">
+      <img src="images/9.png" alt="Thumbnail 9">
+    </div>
+    <div class="thumb" data-full="images/10.png">
+      <img src="images/10.png" alt="Thumbnail 10">
+    </div>
+    <div class="thumb" data-full="images/11.png">
+      <img src="images/11.png" alt="Thumbnail 11">
+    </div>
+        <div class="thumb" data-full="images/12.png">
+      <img src="images/12.png" alt="Thumbnail 12">
+    </div>
+        <div class="thumb" data-full="images/13.png">
+      <img src="images/13.png" alt="Thumbnail 13">
+    </div>
+        <div class="thumb" data-full="images/14.png">
+      <img src="images/14.png" alt="Thumbnail 14">
+    </div>
+        <div class="thumb" data-full="images/15.png">
+      <img src="images/15.png" alt="Thumbnail 15">
+    </div>
+        <div class="thumb" data-full="images/16.png">
+      <img src="images/16.png" alt="Thumbnail 16">
+    </div>
+        <div class="thumb" data-full="images/17.png">
+      <img src="images/17.png" alt="Thumbnail 17">
+    </div>
+        <div class="thumb" data-full="images/18.png">
+      <img src="images/18.png" alt="Thumbnail 18">
+    </div>
+
+  </div>
+
+  <!-- 팝업 오버레이 -->
+  <div class="popup" id="popup">
+    <button class="nav prev">&#10094;</button>
+    <img id="popup-img" src="" alt="Full Image">
+    <button class="nav next">&#10095;</button> <!-- 버튼 -->
+  </div>
+
+  
+<script>
+const thumbs = document.querySelectorAll('.thumb');
+const popup = document.getElementById('popup');
+const popupImg = document.getElementById('popup-img');
+const prevBtn = document.querySelector('.prev');
+const nextBtn = document.querySelector('.next');
+
+let currentIndex = 0;
+
+let zoomLevel = 1;
+let isDragging = false;
+let startX, startY;
+let imgX = 0, imgY = 0;
+
+/* =======================
+   썸네일 클릭
+======================= */
+thumbs.forEach((thumb, index) => {
+  thumb.addEventListener('click', () => {
+    currentIndex = index;
+    openImage();
+  });
+});
+
+function openImage() {
+  popup.classList.add('active');
+  popupImg.src = thumbs[currentIndex].dataset.full;
+
+  zoomLevel = 1;
+  imgX = 0;
+  imgY = 0;
+  updateTransform();
+}
+
+/* =======================
+   화살표 버튼
+======================= */
+
+prevBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  currentIndex = (currentIndex - 1 + thumbs.length) % thumbs.length;
+  openImage();
+});
+
+nextBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  currentIndex = (currentIndex + 1) % thumbs.length;
+  openImage();
+});
+
+/* =======================
+   키보드 방향키
+======================= */
+
+document.addEventListener('keydown', (e) => {
+  if (!popup.classList.contains('active')) return;
+
+  if (e.key === 'ArrowLeft') {
+    currentIndex = (currentIndex - 1 + thumbs.length) % thumbs.length;
+    openImage();
+  }
+
+  if (e.key === 'ArrowRight') {
+    currentIndex = (currentIndex + 1) % thumbs.length;
+    openImage();
+  }
+
+  if (e.key === 'Escape') {
+    popup.classList.remove('active');
+  }
+});
+
+/* =======================
+   팝업 닫기
+======================= */
+
+popup.addEventListener('click', (e) => {
+  if (e.target === popup) {
+    popup.classList.remove('active');
+  }
+});
+
+/* =======================
+   확대 / 드래그
+======================= */
+
+popup.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const zoomAmount = 0.1;
+  if (e.deltaY < 0) {
+    zoomLevel += zoomAmount;
+  } else {
+    zoomLevel = Math.max(1, zoomLevel - zoomAmount);
+  }
+  updateTransform();
+});
+
+popupImg.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startX = e.clientX - imgX;
+  startY = e.clientY - imgY;
+  popupImg.style.cursor = 'grabbing';
+  e.preventDefault();
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    imgX = e.clientX - startX;
+    imgY = e.clientY - startY;
+    updateTransform();
+  }
+});
+
+window.addEventListener('mouseup', () => {
+  isDragging = false;
+  popupImg.style.cursor = 'grab';
+});
+
+function updateTransform() {
+  popupImg.style.transform =
+    `translate(${imgX}px, ${imgY}px) scale(${zoomLevel})`;
+}
+
+  </script>
+</body>
+</html>
